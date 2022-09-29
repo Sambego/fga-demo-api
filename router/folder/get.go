@@ -46,13 +46,13 @@ func GetFolderHandler(writer http.ResponseWriter, request *http.Request, store *
 
 	// Return an unauthorized response when the current user is not allowed to view the document
 	if !resp.GetAllowed() {
-		log.Printf("  - ![GET] /folders/%v -> Not allowed for user %v", vars["id"], authCtx.Subject)
+		log.Printf("            -> Not allowed for user %v", authCtx.Subject)
 		return nil, errors.ErrorUnauthorized
 	}
 
 	// Return the folder if we're allowed to
 	folder := store.GetFolder(vars["id"])
-	log.Printf("  - [GET] /folders/%v -> Returned folder with name %v", folder.ID, folder.Name)
+	log.Printf("            -> Returned folder with name %v", folder.Name)
 	return &GetFolderResponse{
 		Folder: folder,
 	}, nil
@@ -63,5 +63,5 @@ func GetFoldersHandler(writer http.ResponseWriter, request *http.Request, store 
 	log.Printf("  - [GET] /folders ")
 	folder, _ := json.Marshal(store.GetFodlers())
 	io.WriteString(writer, string(folder))
-	log.Printf("  - [GET] /folders -> Returned all folders")
+	log.Printf("            -> Returned all folders")
 }

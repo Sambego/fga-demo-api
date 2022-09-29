@@ -60,7 +60,7 @@ func CreateDocumentHandler(writer http.ResponseWriter, request *http.Request, st
 	}
 
 	// Return the created document
-	log.Printf("  - [POST] /documents -> Created document with ID %v", document.ID)
+	log.Printf("            -> Created document with ID %v", document.ID)
 	return &CreateDocumentResponse{
 		Document: document,
 	}, nil

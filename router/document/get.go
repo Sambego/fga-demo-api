@@ -46,13 +46,13 @@ func GetDocumentHandler(writer http.ResponseWriter, request *http.Request, store
 
 	// Return an unauthorized response when the current user is not allowed to view the document
 	if !resp.GetAllowed() {
-		log.Printf("  - ![GET] /documents/%v -> Not allowed for user %v", vars["id"], authCtx.Subject)
+		log.Printf("            -> Not allowed for user %v", authCtx.Subject)
 		return nil, errors.ErrorUnauthorized
 	}
 
 	// Return the document if we're allowed to
 	document := store.GetDocument(vars["id"])
-	log.Printf("  - [GET] /documents/%v -> Returned document with name %v", document.ID, document.Name)
+	log.Printf("            -> Returned document with name %v", document.Name)
 	return &GetDocumentResponse{
 		Document: document,
 	}, nil
@@ -63,5 +63,5 @@ func GetDocumentsHandler(writer http.ResponseWriter, request *http.Request, stor
 	log.Printf("  - [GET] /documents ")
 	document, _ := json.Marshal(store.GetDocuments())
 	io.WriteString(writer, string(document))
-	log.Printf("  - [GET] /documents -> Returned all documents")
+	log.Printf("            -> Returned all documents")
 }

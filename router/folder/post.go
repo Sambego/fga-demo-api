@@ -61,7 +61,7 @@ func CreateFolderHandler(writer http.ResponseWriter, request *http.Request, stor
 	}
 
 	// Return the created folder
-	log.Printf("  - [POST] /folders -> Created folder with ID %v", folder.ID)
+	log.Printf("            -> Created folder with ID %v", folder.ID)
 	return &CreateFolderResponse{
 		Folder: folder,
 	}, nil

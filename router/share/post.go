@@ -56,7 +56,7 @@ func ShareDocumentHandler(writer http.ResponseWriter, request *http.Request, sto
 
 	// Makethe FGA request
 	_, _, err := FGAClient.Write(request.Context()).Body(body).Execute()
-	log.Printf("  - [POST] /documents/%v/share -> Shared the document with %v as a %v", vars["id"], newRelation.User, newRelation.Relation)
+	log.Printf("            -> Shared the document with %v as a %v", newRelation.User, newRelation.Relation)
 
 	// Error handling
 	if err != nil {
@@ -93,7 +93,7 @@ func ShareFolderHandler(writer http.ResponseWriter, request *http.Request, store
 
 	// Makethe FGA request
 	_, _, err := FGAClient.Write(request.Context()).Body(body).Execute()
-	log.Printf("  - [POST] /folders/%v/share -> Shared the folder with %v as a %v", vars["id"], newRelation.User, newRelation.Relation)
+	log.Printf("            -> Shared the folder with %v as a %v", newRelation.User, newRelation.Relation)
 
 	// Error handling
 	if err != nil {
