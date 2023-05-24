@@ -7,7 +7,7 @@ go run main.go
 
 - Sam
 ```
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzYW0uYmVsbGVuQG9rdGEuY29tIiwibmFtZSI6IlNhbSBCZWxsZW4iLCJpYXQiOjE1MTYyMzkwMjJ9.X-y71Y_c7quCFtSLlYl_bDQ_6Jqq1PoTYbwkNOH2MhI
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzYW0uYmVsbGVuQG9rdGEuY29tIiwibmFtZSI6IlNhbSBCZWxsZW4iLCJpYXQiOjE2ODQ5NjQwMTh9.XIC-ObeyTnraRqknTtV4U2x9_g_-cKFeMkYsdyYBgb4
 ```
 
 - Ana
