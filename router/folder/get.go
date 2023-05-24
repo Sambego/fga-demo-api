@@ -29,10 +29,10 @@ func GetFolderHandler(writer http.ResponseWriter, request *http.Request, store *
 
 	// Create an FGA request to check of the current user can view the folder
 	body := auth0fga.CheckRequest{
-		TupleKey: &auth0fga.TupleKey{
+		TupleKey: auth0fga.TupleKey{
 			Object:   auth0fga.PtrString(fmt.Sprintf("folder:%s", vars["id"])),
 			Relation: auth0fga.PtrString("viewer"),
-			User:     auth0fga.PtrString(authCtx.Subject),
+			User:     auth0fga.PtrString(fmt.Sprintf("user:%s", authCtx.Subject)),
 		},
 	}
 

@@ -40,7 +40,7 @@ func CreateDocumentHandler(writer http.ResponseWriter, request *http.Request, st
 		{
 			Object:   auth0fga.PtrString(fmt.Sprintf("document:%s", document.ID)),
 			Relation: auth0fga.PtrString("owner"),
-			User:     auth0fga.PtrString(authCtx.Subject),
+			User:     auth0fga.PtrString(fmt.Sprintf("user:%s", authCtx.Subject)),
 		},
 	}
 

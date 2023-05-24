@@ -37,6 +37,7 @@ func ShareDocumentHandler(writer http.ResponseWriter, request *http.Request, sto
 
 	// Parse the body
 	newRelation := parseShareBody(request.Body)
+	log.Printf("  - %v", newRelation.User)
 
 	// Create the new relationship tupple for the current user
 	tuples := []auth0fga.TupleKey{

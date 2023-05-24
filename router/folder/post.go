@@ -41,7 +41,7 @@ func CreateFolderHandler(writer http.ResponseWriter, request *http.Request, stor
 		{
 			Object:   auth0fga.PtrString(fmt.Sprintf("folder:%s", folder.ID)),
 			Relation: auth0fga.PtrString("owner"),
-			User:     auth0fga.PtrString(authCtx.Subject),
+			User:     auth0fga.PtrString(fmt.Sprintf("user:%s", authCtx.Subject)),
 		},
 	}
 
