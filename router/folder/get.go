@@ -39,7 +39,7 @@ func GetFolderHandler(writer http.ResponseWriter, request *http.Request, store *
 
 	// Error Handling
 	if err != nil {
-		// handle error
+		log.Fatal(err)
 	}
 
 	// Return forbidden response when the current user is not allowed to view the document

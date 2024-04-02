@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -37,7 +36,7 @@ func main() {
 	})
 
 	if err != nil {
-		log.Fatal("'Oops, %v", err)
+		log.Fatal(err)
 	}
 
 	log.Printf("FGA API URL: %v", apiUrl)
@@ -55,7 +54,7 @@ func main() {
 	}
 
 	// Read the fga-model.json file, containing our model
-	jsonData, err := ioutil.ReadFile("./fga-model.json")
+	jsonData, err := os.ReadFile("./fga-model.json")
 
 	if err != nil {
 		log.Fatal(err)
