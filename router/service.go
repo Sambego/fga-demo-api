@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	auth0fga "github.com/auth0-lab/fga-go-sdk"
+	openfga "github.com/openfga/go-sdk/client"
 	"github.com/sambego/fga-demo-api/data"
 	"github.com/sambego/fga-demo-api/errors"
 	"github.com/sambego/fga-demo-api/router/document"
@@ -14,7 +14,7 @@ import (
 
 type Service struct {
 	Store     *data.Store
-	FGAClient auth0fga.Auth0FgaApi
+	FGAClient *openfga.OpenFgaClient
 }
 
 /*
@@ -25,8 +25,8 @@ func (service Service) CreateDocument(writer http.ResponseWriter, request *http.
 
 	// Error handling
 	if err != nil {
-		if err == errors.ErrorUnauthorized {
-			http.Error(writer, "unauthorized", http.StatusUnauthorized)
+		if err == errors.ErrorForbidden {
+			http.Error(writer, "forbidden", http.StatusForbidden)
 			return
 		}
 	}
@@ -50,8 +50,8 @@ func (service Service) GetDocument(writer http.ResponseWriter, request *http.Req
 
 	// Error handling
 	if err != nil {
-		if err == errors.ErrorUnauthorized {
-			http.Error(writer, "unauthorized", http.StatusUnauthorized)
+		if err == errors.ErrorForbidden {
+			http.Error(writer, "forbidden", http.StatusForbidden)
 			return
 		}
 	}
@@ -75,16 +75,16 @@ func (service Service) ShareDocument(writer http.ResponseWriter, request *http.R
 
 	// Error handling
 	if err != nil {
-		if err == errors.ErrorUnauthorized {
-			http.Error(writer, "unauthorized", http.StatusUnauthorized)
+		if err == errors.ErrorForbidden {
+			http.Error(writer, "forbidden", http.StatusForbidden)
 			return
 		}
 	}
 }
 
-// For debuggin purposes, no FGA checks are done here
+// For debugging purposes, no FGA checks are done here
 func (service Service) GetDocuments(writer http.ResponseWriter, request *http.Request) {
-	document.GetDocumentsHandler(writer, request, service.Store, service.FGAClient)
+	document.GetDocumentsHandler(writer, request, service.Store)
 }
 
 /*
@@ -95,8 +95,8 @@ func (service Service) CreateFolder(writer http.ResponseWriter, request *http.Re
 
 	// Error handling
 	if err != nil {
-		if err == errors.ErrorUnauthorized {
-			http.Error(writer, "unauthorized", http.StatusUnauthorized)
+		if err == errors.ErrorForbidden {
+			http.Error(writer, "forbidden", http.StatusForbidden)
 			return
 		}
 	}
@@ -120,8 +120,8 @@ func (service Service) GetFolder(writer http.ResponseWriter, request *http.Reque
 
 	// Error handling
 	if err != nil {
-		if err == errors.ErrorUnauthorized {
-			http.Error(writer, "unauthorized", http.StatusUnauthorized)
+		if err == errors.ErrorForbidden {
+			http.Error(writer, "forbidden", http.StatusForbidden)
 			return
 		}
 	}
@@ -145,14 +145,14 @@ func (service Service) ShareFolder(writer http.ResponseWriter, request *http.Req
 
 	// Error handling
 	if err != nil {
-		if err == errors.ErrorUnauthorized {
-			http.Error(writer, "unauthorized", http.StatusUnauthorized)
+		if err == errors.ErrorForbidden {
+			http.Error(writer, "forbidden", http.StatusForbidden)
 			return
 		}
 	}
 }
 
-// For debuggin purposes, no FGA checks are done here
+// For debugging purposes, no FGA checks are done here
 func (service Service) GetFolders(writer http.ResponseWriter, request *http.Request) {
-	folder.GetFoldersHandler(writer, request, service.Store, service.FGAClient)
+	folder.GetFoldersHandler(writer, request, service.Store)
 }

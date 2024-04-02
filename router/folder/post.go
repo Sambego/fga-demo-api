@@ -7,7 +7,8 @@ import (
 	"log"
 	"net/http"
 
-	auth0fga "github.com/auth0-lab/fga-go-sdk"
+	openfga "github.com/openfga/go-sdk"
+	openfgaclient "github.com/openfga/go-sdk/client"
 	"github.com/sambego/fga-demo-api/data"
 	"github.com/sambego/fga-demo-api/middleware/auth"
 )
@@ -27,8 +28,8 @@ func parseCreateBody(body io.Reader) data.Folder {
 	return parsedBody
 }
 
-func CreateFolderHandler(writer http.ResponseWriter, request *http.Request, store *data.Store, FGAClient auth0fga.Auth0FgaApi) (*CreateFolderResponse, error) {
-	log.Printf("  - [POST] /documents ")
+func CreateFolderHandler(writer http.ResponseWriter, request *http.Request, store *data.Store, FGAClient *openfgaclient.OpenFgaClient) (*CreateFolderResponse, error) {
+	log.Printf("[POST] /documents ")
 
 	// Get the Authentication context
 	authCtx, _ := auth.AuthContextFromContext(request.Context())
@@ -37,23 +38,21 @@ func CreateFolderHandler(writer http.ResponseWriter, request *http.Request, stor
 	folder := store.CreateFolder(parseCreateBody(request.Body))
 
 	// Create the ownership tupple for the current user
-	tuples := []auth0fga.TupleKey{
+	tuples := []openfga.TupleKey{
 		{
-			Object:   auth0fga.PtrString(fmt.Sprintf("folder:%s", folder.ID)),
-			Relation: auth0fga.PtrString("owner"),
-			User:     auth0fga.PtrString(fmt.Sprintf("user:%s", authCtx.Subject)),
+			Object:   fmt.Sprintf("folder:%s", folder.ID),
+			Relation: "owner",
+			User:     fmt.Sprintf("user:%s", authCtx.Subject),
 		},
 	}
 
 	// Create an FGA request
-	body := auth0fga.WriteRequest{
-		Writes: &auth0fga.TupleKeys{
-			TupleKeys: tuples,
-		},
+	body := openfgaclient.ClientWriteRequest{
+		Writes: tuples,
 	}
 
 	// Makethe FGA request
-	_, _, err := FGAClient.Write(request.Context()).Body(body).Execute()
+	_, err := FGAClient.Write(request.Context()).Body(body).Execute()
 
 	// Error handling
 	if err != nil {

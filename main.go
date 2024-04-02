@@ -2,15 +2,16 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
-	"strings"
 	"time"
 
-	auth0fga "github.com/auth0-lab/fga-go-sdk"
 	"github.com/joho/godotenv"
+	openfgaclient "github.com/openfga/go-sdk/client"
 	"github.com/sambego/fga-demo-api/data"
 	"github.com/sambego/fga-demo-api/router"
 )
@@ -25,38 +26,54 @@ func main() {
 	}
 
 	// Check for environment variables
-	storeID, ok := os.LookupEnv("FGA_STORE_ID")
+	apiUrl, ok := os.LookupEnv("FGA_API_URL")
 	if !ok {
 		log.Fatal("'FGA_STORE_ID' environment variable must be set")
 	}
 
-	clientID, ok := os.LookupEnv("FGA_CLIENT_ID")
-	if !ok {
-		log.Fatal("'FGA_CLIENT_ID' environment variable must be set")
-	}
-
-	clientSecret, ok := os.LookupEnv("FGA_CLIENT_SECRET")
-	if !ok {
-		log.Fatal("'FGA_CLIENT_SECRET' environment variable must be set")
-	}
-
 	// Initialise the Auth0 FGA middleware
-	fgaConfig, err := auth0fga.NewConfiguration(auth0fga.UserConfiguration{
-		StoreId:      storeID,
-		ClientId:     clientID,
-		ClientSecret: clientSecret,
-		Environment:  "us",
+	fgaClient, err := openfgaclient.NewSdkClient(&openfgaclient.ClientConfiguration{
+		ApiUrl: apiUrl,
 	})
 
 	if err != nil {
 		log.Fatal("'Oops, %v", err)
 	}
 
-	log.Printf("-------- AUTH0 FGA --------")
-	log.Printf("  - Store ID: %v", storeID)
-	log.Printf("  - Cliend ID: %v", clientID)
-	log.Printf("  - Client Secret: %v%v%v", clientSecret[0:4], strings.Repeat("*", len(clientSecret)-8), clientSecret[len(clientSecret)-4:])
-	log.Printf("---------------------------")
+	log.Printf("FGA API URL: %v", apiUrl)
+
+	// Create a new FGA Store
+	body := openfgaclient.ClientCreateStoreRequest{Name: "FGA Demo"}
+	fgaStore, err := fgaClient.CreateStore(context.Background()).Body(body).Execute()
+
+	// Set the new store as the store ID for the Open FGA Client
+	fgaClient.SetStoreId(fgaStore.Id)
+	log.Printf("NEW FGA STORE ID: %v", fgaStore.Id)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Read the fga-model.json file, containing our model
+	jsonData, err := ioutil.ReadFile("./fga-model.json")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Convert to a ClientWriteAuthorizationModelRequest
+	var fgaModel openfgaclient.ClientWriteAuthorizationModelRequest
+	err = json.Unmarshal(jsonData, &fgaModel)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create a new FGA Model with the contents of our fga-model.json file
+	fgaModelData, err := fgaClient.WriteAuthorizationModel(context.Background()).Body(fgaModel).Execute()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("NEW FGA MODEL ID: %v", fgaModelData.AuthorizationModelId)
 
 	// Create a new data store
 	var documents []data.Document
@@ -67,20 +84,25 @@ func main() {
 	// Create a new routerservice
 	service := router.Service{
 		Store:     &store,
-		FGAClient: auth0fga.NewAPIClient(fgaConfig).Auth0FgaApi,
+		FGAClient: fgaClient,
 	}
 
 	// Create router and routes
 	r := router.CreateRouter(service)
 
+	// Port
+	var port = ":4000"
+
 	// Start the server
 	srv := &http.Server{
-		Addr:         ":8080",
+		Addr:         port,
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
 		Handler:      r,
 	}
+
+	log.Printf("SERVER URL: http://localhost%s", port)
 
 	// Error handling
 	go func() {

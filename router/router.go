@@ -10,8 +10,8 @@ import (
 	"github.com/sambego/fga-demo-api/middleware/auth"
 )
 
-func defaultHandler(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "ok\n")
+func defaultHandler(writer http.ResponseWriter, request *http.Request) {
+	io.WriteString(writer, "ok\n")
 }
 
 func CreateRouter(service Service) *mux.Router {
